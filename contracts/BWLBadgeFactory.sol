@@ -38,10 +38,12 @@ contract BWLBadgeFactory is ERC1155, Ownable {
         address _to,
         uint256 _id,
         uint256 _amount,
-        string memory _uri
+        string memory _uri,
+        uint256 _price
     ) external {
         _mint(_to, _id, _amount, "");
         setURI(_id, _uri);
+        prices[_id] = _price;
         count++;
     }
 
@@ -49,11 +51,13 @@ contract BWLBadgeFactory is ERC1155, Ownable {
         address _to,
         uint256[] memory _ids,
         uint256[] memory _amounts,
-        string[] memory _uris
+        string[] memory _uris,
+        uint256 _price
     ) external {
         _mintBatch(_to, _ids, _amounts, "");
         for (uint256 i = 0; i < _ids.length; i++) {
             setURI(_ids[i], _uris[i]);
+            prices[_ids[i]] = _price;
             count++;
         }
     }
@@ -77,6 +81,11 @@ contract BWLBadgeFactory is ERC1155, Ownable {
     ) external onlyOwner {
         _burnBatch(_from, _burnIds, _burnAmounts);
         _mintBatch(_from, _mintIds, _mintAmounts, "");
+    }
+
+    function claim(uint256 _id) payable external {
+        require(prices[_id] <= msg.value);
+        
     }
 
     // Utils
