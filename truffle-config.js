@@ -1,27 +1,30 @@
-/**
- * Use this file to configure your truffle project. It's seeded with some
- * common settings for different networks and features like migrations,
- * compilation, and testing. Uncomment the ones you need or modify
- * them to suit your project as necessary.
- *
- * More information about configuration can be found at:
- * 
- * https://trufflesuite.com/docs/truffle/reference/configuration
- *
- * To deploy via Infura you'll need a wallet provider (like @truffle/hdwallet-provider)
- * to sign your transactions before they're sent to a remote public node. Infura accounts
- * are available for free at: infura.io/register.
- *
- * You'll also need a mnemonic - the twelve word phrase the wallet uses to generate
- * public/private key pairs. If you're publishing your code to GitHub make sure you load this
- * phrase from a file you've .gitignored so it doesn't accidentally become public.
- *
- */
+require('dotenv').config();
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const getEnv = env => {
+  const value = process.env[env];
+
+  if (typeof value === 'undefined') {
+    throw new Error('ENV NOT SET');
+  }
+
+  return value;
+}
+
+const mainPrivate = getEnv('MAIN_WALLET_PRIVATE');
+const testPrivate = getEnv('TEST_WALLET_PRIVATE');
+const localPri = getEnv('LOCAL_WALLET_PRIVATE');
 //
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+// const mainURL = getEnv('MAIN_URL');
+// const rinURL = getEnv('RIN_URL');
+// const kURL = getEnv('KOVAN_URL');
+// const mURL = getEnv('MUMBAI_URL');
+
+// const mainID = getEnv('MAIN_NETWORK_ID');
+// const rinID = getEnv('RIN_NETWORK_ID');
+// const kID = getEnv('KOVAN_ID');
+// const mID = getEnv('MUMBAI_ID');
 
 module.exports = {
   /**
@@ -33,47 +36,45 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
   networks: {
-    // Useful for testing. The `development` name is special - truffle uses it by default
-    // if it's defined here and no other network is specified at the command line.
-    // You should run a client (like ganache, geth, or parity) in a separate terminal
-    // tab if you use this network and you must also set the `host`, `port` and `network_id`
-    // options below to some value.
-    //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
+    dev: {
+      provider: () => new HDWalletProvider(localPri, 'HTTP://127.0.0.1:7545'),
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
+      skipDryRun: true
+    },
+    // main: {
+    //   provider: () => new HDWalletProvider(mainPrivate, mainURL),
+    //   network_id: mainID,
+    //   gas: 2900000,
+    //   gasPrice: 35000000000,
+    //   skipDryRun: false
     // },
-    //
-    // An additional network, but with some advanced options…
-    // advanced: {
-    //   port: 8777,             // Custom port
-    //   network_id: 1342,       // Custom network
-    //   gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
-    //   gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-    //   from: <address>,        // Account to send transactions from (default: accounts[0])
-    //   websocket: true         // Enable EventEmitter interface for web3 (default: false)
-    // },
-    //
-    // Useful for deploying to a public network.
-    // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-    // ropsten: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/YOUR-PROJECT-ID`),
-    //   network_id: 3,       // Ropsten's id
-    //   gas: 5500000,        // Ropsten has a lower block limit than mainnet
-    //   confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
-    //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+    // rinkeby: {
+    //   provider: () => new HDWalletProvider(testPrivate, rinURL),
+    //   network_id: rinID,       // Ropsten's id
+    //   gas: 29000000,        // Ropsten has a lower block limit than mainnet
     //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     // },
-    //
-    // Useful for private networks
-    // private: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-    //   network_id: 2111,   // This network is yours, in the cloud.
-    //   production: true    // Treats this network as if it was a public net. (default: false)
-    // }
+    // kovan: {
+    //   provider: () => new HDWalletProvider(testPrivate, kURL),
+    //   network_id: kID,       // Ropsten's id
+    //   gas: 5500000,        // Ropsten has a lower block limit than mainnet
+    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    // },
+    // matic: {
+    //   provider: () => new HDWalletProvider(testPrivate , mURL),
+    //   network_id: 80001,
+    //   gas: 6000000,
+    //   skipDryRun: true
+    // },
+    evmos_dev: {
+      provider: () => new HDWalletProvider(testPrivate, 'https://eth.bd.evmos.dev:8545'),
+      network_id: 9000,
+      gas: 5500000,
+      skipDryRun: true
+    }
   },
 
   // Set default mocha options here, use special reporters, etc.

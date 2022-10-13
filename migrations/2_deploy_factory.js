@@ -1,4 +1,4 @@
-let factoryContract = artifacts.require("FactoryERC1155");
+let factoryContract = artifacts.require("BWLBadgeFactory");
 
 module.exports = function(deployer){
     deployer.deploy(factoryContract);
